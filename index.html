@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>움직이는 피카츄 말풍선</title>
+<style>
+  body {
+    background: #f0f0f0;
+    overflow: hidden;
+  }
+  .pikachu {
+    position: absolute;
+    bottom: 50px;
+    left: 0;
+    width: 100px;
+    height: 100px;
+    background: yellow;
+    border-radius: 50% 50% 40% 40% / 50% 50% 40% 40%;
+    border: 3px solid #000;
+    animation: move 4s infinite alternate ease-in-out;
+  }
+  .ear {
+    position: absolute;
+    width: 20px;
+    height: 50px;
+    background: yellow;
+    border: 3px solid #000;
+    border-radius: 50%;
+    top: -20px;
+  }
+  .ear.left { left: 10px; transform: rotate(-20deg); }
+  .ear.right { right: 10px; transform: rotate(20deg); }
+  .eye {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: black;
+    border-radius: 50%;
+    top: 30px;
+  }
+  .eye.left { left: 25px; }
+  .eye.right { right: 25px; }
+  .cheek {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    background: red;
+    border-radius: 50%;
+    bottom: 20px;
+  }
+  .cheek.left { left: 10px; }
+  .cheek.right { right: 10px; }
+  .mouth {
+    position: absolute;
+    width: 30px;
+    height: 10px;
+    border-bottom: 3px solid black;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  /* 말풍선 스타일 */
+  .speech-bubble {
+    position: absolute;
+    bottom: 120px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    border: 2px solid #000;
+    border-radius: 10px;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+  }
+  .speech-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 10px 10px 0;
+    border-style: solid;
+    border-color: white transparent transparent transparent;
+  }
+
+  @keyframes move {
+    0% { left: 0; }
+    100% { left: calc(100% - 100px); }
+  }
+</style>
+</head>
+<body>
+  <div class="pikachu">
+    <div class="ear left"></div>
+    <div class="ear right"></div>
+    <div class="eye left"></div>
+    <div class="eye right"></div>
+    <div class="cheek left"></div>
+    <div class="cheek right"></div>
+    <div class="mouth"></div>
+    <div class="speech-bubble">이유림바보</div>
+  </div>
+</body>
+</html>
