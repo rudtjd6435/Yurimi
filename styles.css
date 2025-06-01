@@ -1,0 +1,366 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+#emoji-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  font-size: 2rem;
+  pointer-events: none; /* 클릭 막지 않도록 설정 */
+  z-index: 1000;
+  transform: translate(-50%, -50%);
+}
+#snow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* 클릭 막지 않도록 */
+  z-index: 999; /* 기존 요소 위에만 나오게! */
+}
+
+footer {
+  background: #2c3e50;
+  color: white;
+  text-align: center;
+  padding: 1rem;
+}
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    line-height: 1.6;
+    background-color: #f5f5f5;
+    min-height: 100vh;
+}
+/* 기본 CSS: 모든 요소에 box-sizing 적용하여 패딩, 보더가 너비/높이에 포함되도록 함 */
+
+/* 헤더 스타일 */
+.hero-header {
+    position: relative;
+    /* 헤더의 높이 조절: 원하는 높이로 설정하세요 (예: 50vh, 600px 등) */
+    height: 60vh; /* <-- 이 값을 원하는 높이로 조절하세요 */
+    overflow: hidden; /* 비디오가 헤더 영역을 벗어나지 않도록 숨김 */
+    display: flex;
+    justify-content: center; /* 수평 중앙 정렬 */
+    align-items: center;     /* 수직 중앙 정렬 */
+    /* 비디오의 배경색과 동일하게 설정하여 레터박스가 생길 경우 눈에 덜 띄도록 */
+    background-color: black; /* 또는 비디오의 평균 색상 */
+}
+
+/* 비디오 스타일 */
+.header-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    /* 비디오가 헤더 영역을 완전히 덮되, 비율을 유지하며 잘리지 않도록 */
+    width: 100%;
+    height: 100%;
+    /* 여기가 핵심: 비디오가 잘리지 않고 전체적으로 다 보이도록 */
+    object-fit: contain;
+    /* 비디오가 텍스트 뒤에 오도록 z-index를 낮게 설정 */
+    z-index: 1;
+}
+
+/* 헤더 텍스트 컨테이너 스타일 */
+.header-content {
+    z-index: 2; /* 텍스트가 비디오 위에 오도록 z-index를 높게 설정 */
+    color: white;
+    text-align: center;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* 텍스트 그림자 추가 */
+}
+
+/* 텍스트 스타일 */
+.header-content h1 {
+    font-size: 3em;
+    margin-bottom: 10px;
+}
+
+.header-content p {
+    font-size: 1.2em;
+}
+header {
+    position: relative;
+    width: 100%;
+    height: 500px; /* 원하는 높이로 조절 가능 */
+    overflow: hidden;
+    margin-bottom: 3rem;
+  }
+ 
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+    max-width: 1100px;
+  margin: 0 auto;   /* 가운데 정렬 */
+  padding: 10 10rem;  /* 양옆 여백! */
+}
+
+.equipment-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-top: 2rem;
+    padding-bottom: 2rem;
+
+
+}
+
+.equipment-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    position: relative;
+}
+
+.equipment-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+}
+
+.equipment-icon {
+    width: 100%;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #2c3e50, #000000);
+    color: white;
+    font-size: 3rem;
+    position: relative;
+}
+
+.equipment-icon::before {
+    content: '🐱';
+    font-size: 4rem;
+}
+
+.equipment-info {
+    padding: 1.5rem;
+    background: white;
+}
+
+.equipment-info h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: #2c3e50;
+}
+
+.equipment-info p {
+    color: #666;
+    font-size: 1rem;
+    line-height: 1.4;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.8);
+    z-index: 1000;
+}
+
+.modal-content {
+    position: relative;
+    background-color: white;
+    margin: 5% auto;
+    padding: 2rem;
+    width: 90%;
+    max-width: 800px;
+    border-radius: 15px;
+    animation: modalOpen 0.3s ease-out;
+}
+
+.close-button {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    font-size: 30px;
+    cursor: pointer;
+    color: #2c3e50;
+}
+
+.usage-steps {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 10px;
+    margin-top: 1rem;
+}
+
+.usage-steps h4 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.usage-steps ol {
+    padding-left: 1.5rem;
+}
+
+.usage-steps li {
+    margin-bottom: 0.5rem;
+}
+
+/* 각 운동 부위별 아이콘 스타일 */
+/* 가슴운동 */
+[data-category="chest"] .equipment-icon::before { content: '🐶'; }
+
+/* 등운동 */
+[data-category="back"] .equipment-icon::before { content: '🐰'; }
+
+/* 팔운동 */
+[data-category="arm"] .equipment-icon::before { content: '🍓'; }
+
+/* 어깨운동 */
+[data-category="shoulder"] .equipment-icon::before { content: '💕'; }
+
+/* 하체운동 */
+[data-category="leg"] .equipment-icon::before { content: '🤗'; }
+
+/* 복근운동 */
+[data-category="abs"] .equipment-icon::before { content: '😻'; }
+
+/* 기존의 core 카테고리 제거 */
+[data-category="core"] .equipment-icon::before { content: none; }
+
+/* 기존의 개별 아이콘 스타일 제거 */
+.icon-legpress::before,
+.icon-benchpress::before,
+.icon-latpulldown::before,
+.icon-shoulderpress::before,
+.icon-legextension::before,
+.icon-cablecrossover::before,
+.icon-smithMachine::before,
+.icon-pecdeckfly::before,
+.icon-seatedrow::before,
+.icon-abcrunch::before,
+.icon-calfRaise::before,
+.icon-bicepCurl::before,
+.icon-tricepExtension::before {
+    content: none;
+}
+
+.filter-container {
+    max-width: 1400px;
+    margin: 0 auto 2rem auto;
+    padding: 0 2rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.filter-button {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 25px;
+    background-color: #2c3e50;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+    min-width: 100px;
+    max-width: 120px;
+    text-align: center;
+}
+
+.filter-button:hover {
+    background-color: #34495e;
+    transform: translateY(-2px);
+}
+
+.filter-button.active {
+    background-color: #1a252f;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 1200px) {
+    .equipment-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .container {
+        max-width: 900px;
+    }
+}
+
+@media (max-width: 768px) {
+    .equipment-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+    }
+    .container {
+        padding: 1rem;
+    }
+    .equipment-card {
+        max-width: none;
+        margin: 0;
+    }
+    .filter-container {
+        padding: 0 1rem;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem;
+    }
+    .filter-button {
+        padding: 0.6rem 0.8rem;
+        font-size: 0.9rem;
+        min-width: auto;
+        max-width: none;
+        width: 100%;
+    }
+    .modal-content {
+        margin: 10% auto;
+        padding: 1.5rem;
+    }
+    .equipment-icon {
+        height: 120px;
+    }
+    .equipment-info {
+        padding: 1rem;
+    }
+    .equipment-info h3 {
+        font-size: 1.1rem;
+    }
+    .equipment-info p {
+        font-size: 0.9rem;
+    }
+
+}
+
+@media (max-width: 480px) {
+    header {
+        padding: 1.5rem 0;
+        margin-bottom: 2rem;
+    }
+    .equipment-grid {
+        gap: 0.5rem;
+    }
+    .equipment-icon {
+        height: 100px;
+    }
+    .equipment-info {
+        padding: 0.8rem;
+    }
+    .equipment-info h3 {
+        font-size: 1rem;
+    }
+    .equipment-info p {
+        font-size: 0.8rem;
+    }
+    .filter-container {
+        gap: 0.3rem;
+    }
+    .filter-button {
+        padding: 0.5rem 0.6rem;
+        font-size: 0.8rem;
+    }
+} 
