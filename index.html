@@ -1,107 +1,764 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>움직이는 피카츄 말풍선</title>
-<style>
-  body {
-    background: #f0f0f0;
-    overflow: hidden;
-  }
-  .pikachu {
-    position: absolute;
-    bottom: 50px;
-    left: 0;
-    width: 100px;
-    height: 100px;
-    background: yellow;
-    border-radius: 50% 50% 40% 40% / 50% 50% 40% 40%;
-    border: 3px solid #000;
-    animation: move 4s infinite alternate ease-in-out;
-  }
-  .ear {
-    position: absolute;
-    width: 20px;
-    height: 50px;
-    background: yellow;
-    border: 3px solid #000;
-    border-radius: 50%;
-    top: -20px;
-  }
-  .ear.left { left: 10px; transform: rotate(-20deg); }
-  .ear.right { right: 10px; transform: rotate(20deg); }
-  .eye {
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    background: black;
-    border-radius: 50%;
-    top: 30px;
-  }
-  .eye.left { left: 25px; }
-  .eye.right { right: 25px; }
-  .cheek {
-    position: absolute;
-    width: 15px;
-    height: 15px;
-    background: red;
-    border-radius: 50%;
-    bottom: 20px;
-  }
-  .cheek.left { left: 10px; }
-  .cheek.right { right: 10px; }
-  .mouth {
-    position: absolute;
-    width: 30px;
-    height: 10px;
-    border-bottom: 3px solid black;
-    bottom: 15px;
-    left: 50%;
-    transform: translateX(-50%);
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>♡yurimi♡</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* 모달 반응형 스타일 */
+        .modal-content {
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 20px;
+        }
 
-  /* 말풍선 스타일 */
-  .speech-bubble {
-    position: absolute;
-    bottom: 120px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: white;
-    border: 2px solid #000;
-    border-radius: 10px;
-    padding: 0.5rem 1rem;
-    font-size: 0.9rem;
-    white-space: nowrap;
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
-  }
-  .speech-bubble::after {
-    content: '';
-    position: absolute;
-    bottom: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-    border-width: 10px 10px 0;
-    border-style: solid;
-    border-color: white transparent transparent transparent;
-  }
+        .modal-flex-container {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0;
+        }
 
-  @keyframes move {
-    0% { left: 0; }
-    100% { left: calc(100% - 100px); }
-  }
-</style>
+        .video-container {
+            flex: 0 0 400px;
+        }
+
+        .video-container video {
+            width: 100%;
+            height: 600px;
+            object-fit: cover;
+        }
+
+        .content-container {
+            flex: 1;
+        }
+
+        /* 태블릿 크기 */
+        @media screen and (max-width: 1024px) {
+            .video-container {
+                flex: 0 0 300px;
+            }
+            
+            .video-container video {
+                height: 450px;
+            }
+        }
+
+        /* 모바일 크기 */
+        @media screen and (max-width: 768px) {
+                header {
+             height: 200px;
+            }
+
+             .header-text {
+             padding: 1.5rem;
+            }
+
+            .header-text h1 {
+             font-size: 2rem;
+            }
+
+             .header-text p {
+            font-size: 1rem;
+            }
+             #emoji-cursor {
+                display: none;
+            }
+            
+            .modal-flex-container {
+                flex-direction: column;
+            }
+            
+            .video-container {
+                flex: none;
+                width: 100%;
+                max-width: 400px;
+                margin: 0 auto;
+            }
+            
+            .video-container video {
+                height: 500px;
+            }
+            
+            .content-container {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="pikachu">
-    <div class="ear left"></div>
-    <div class="ear right"></div>
-    <div class="eye left"></div>
-    <div class="eye right"></div>
-    <div class="cheek left"></div>
-    <div class="cheek right"></div>
-    <div class="mouth"></div>
-    <div class="speech-bubble">이유림바보</div>
-  </div>
+
+  <div id="emoji-cursor">🍓</div>
+  <canvas id="snow"></canvas>
+<script>
+  const canvas = document.getElementById("snow");
+  const ctx = canvas.getContext("2d");
+
+  let width = window.innerWidth;
+  let height = window.innerHeight;
+  canvas.width = width;
+  canvas.height = height;
+
+  let numFlakes = 100;
+  let flakes = [];
+
+  function Flake(x, y, r, d) {
+    this.x = x;
+    this.y = y;
+    this.r = r;
+    this.d = d;
+    this.speed = Math.random() + 1;
+  }
+
+  function createFlakes() {
+    for (let i = 0; i < numFlakes; i++) {
+      let x = Math.random() * width;
+      let y = Math.random() * height;
+      let r = Math.random() * 4 + 1; // 반지름
+      let d = Math.random() * numFlakes;
+      flakes.push(new Flake(x, y, r, d));
+    }
+  }
+
+  function drawFlakes() {
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = "white";
+    ctx.beginPath();
+    for (let i = 0; i < numFlakes; i++) {
+      let f = flakes[i];
+      ctx.moveTo(f.x, f.y);
+      ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2, true);
+    }
+    ctx.fill();
+    moveFlakes();
+  }
+
+  let angle = 0;
+
+  function moveFlakes() {
+    angle += 0.01;
+    for (let i = 0; i < numFlakes; i++) {
+      let f = flakes[i];
+      f.y += f.speed;
+      f.x += Math.sin(angle) * 0.5;
+
+      // 화면 아래로 내려갔으면 다시 위로!
+      if (f.y > height) {
+        f.y = 0;
+        f.x = Math.random() * width;
+      }
+    }
+  }
+
+  createFlakes();
+  setInterval(drawFlakes, 30);
+
+  // 창 크기 바뀔 때 대응
+  window.addEventListener("resize", () => {
+    width = window.innerWidth;
+    height = window.innerHeight;
+    canvas.width = width;
+    canvas.height = height;
+  });
+</script>
+
+<header class="hero-header">
+    <video autoplay muted loop playsinline class="header-video">
+        <source src="삐츄삐츄삐추.mp4" type="video/mp4">
+        
+    </video>
+    <div class="header-content">
+        <h1>이유림 바보</h1>
+        <p>흠.. 무슨 내용으로 쓸지 생각중..</p>
+    </div>
+</header>
+
+
+    <div class="filter-container">
+        <button class="filter-button active" onclick="filterEquipment('all')">전체</button>
+        <button class="filter-button" onclick="filterEquipment('chest')">이유림</button>
+        <button class="filter-button" onclick="filterEquipment('back')">생각중..</button>
+        <button class="filter-button" onclick="filterEquipment('arm')">생각중..</button>
+        <button class="filter-button" onclick="filterEquipment('shoulder')">생각중..</button>
+        <button class="filter-button" onclick="filterEquipment('leg')">생각중..</button>
+        <button class="filter-button" onclick="filterEquipment('abs')">생각중..</button>
+    </div>
+
+    <div class="container">
+        <div class="equipment-grid">
+            <div class="equipment-card" onclick="openModal('legpress')" data-category="leg">
+                <div class="equipment-icon icon-legpress"></div>
+                <div class="equipment-info">
+                    <h3>생각중..</h3>
+                    <p>생각중..</p>
+                </div>
+            </div>
+
+            <div class="equipment-card" onclick="openModal('benchpress')" data-category="chest">
+                <div class="equipment-icon icon-benchpress"></div>
+                <div class="equipment-info">
+                    <h3>이유림 소개</h3>
+                    <p>1997.05.11</p>
+                </div>
+            </div>
+
+            <div class="equipment-card" onclick="openModal('latpulldown')" data-category="back">
+                <div class="equipment-icon icon-latpulldown"></div>
+                <div class="equipment-info">
+                    <h3>생각중..</h3>
+                    <p>생각중..</p>
+                </div>
+            </div>
+
+            <div class="equipment-card" onclick="openModal('shoulderpress')" data-category="shoulder">
+                <div class="equipment-icon icon-shoulderpress"></div>
+                <div class="equipment-info">
+                    <h3>생각중..</h3>
+                    <p>생각중..</p>
+                </div>
+            </div>
+
+            <div class="equipment-card" onclick="openModal('legextension')" data-category="leg">
+                <div class="equipment-icon icon-legextension"></div>
+                <div class="equipment-info">
+                    <h3>생각중..</h3>
+                    <p>생각중..</p>
+                </div>
+            </div>
+
+            <div class="equipment-card" onclick="openModal('cablecrossover')" data-category="chest">
+                <div class="equipment-icon icon-cablecrossover"></div>
+                <div class="equipment-info">
+                    <h3>생각중..</h3>
+                    <p>생각중..</p>
+                </div>
+            </div>
+
+            <div class="equipment-card" onclick="openModal('smithMachine')" data-category="chest">
+                <div class="equipment-icon icon-smithMachine"></div>
+                <div class="equipment-info">
+                    <h3>생각중..</h3>
+                    <p>생각중..</p>
+                </div>
+            </div>
+
+            <div class="equipment-card" onclick="openModal('pecdeckfly')" data-category="chest">
+                <div class="equipment-icon icon-pecdeckfly"></div>
+                <div class="equipment-info">
+                    <h3>생각중..</h3>
+                    <p>생각중..</p>
+                </div>
+            </div>
+
+            <div class="equipment-card" onclick="openModal('seatedrow')" data-category="back">
+                <div class="equipment-icon icon-seatedrow"></div>
+                <div class="equipment-info">
+                    <h3>생각중..</h3>
+                    <p>생각중..</p>
+                </div>
+            </div>
+
+            <div class="equipment-card" onclick="openModal('abcrunch')" data-category="abs">
+                <div class="equipment-icon icon-abcrunch"></div>
+                <div class="equipment-info">
+                    <h3>생각중..</h3>
+                    <p>생각중..</p>
+                </div>
+            </div>
+
+            <div class="equipment-card" onclick="openModal('calfRaise')" data-category="leg">
+                <div class="equipment-icon icon-calfRaise"></div>
+                <div class="equipment-info">
+                    <h3>생각중..</h3>
+                    <p>생각중..</p>
+                </div>
+            </div>
+
+            <div class="equipment-card" onclick="openModal('bicepCurl')" data-category="arm">
+                <div class="equipment-icon icon-bicepCurl"></div>
+                <div class="equipment-info">
+                    <h3>생각중..</h3>
+                    <p>생각중..</p>
+                </div>
+            </div>
+
+            <div class="equipment-card" onclick="openModal('tricepExtension')" data-category="arm">
+                <div class="equipment-icon icon-tricepExtension"></div>
+                <div class="equipment-info">
+                    <h3>생각중..</h3>
+                    <p>생각중..</p>
+                </div>
+            </div>
+
+            <div class="equipment-card" onclick="openModal('reversePecDeck')" data-category="shoulder">
+                <div class="equipment-icon icon-pecdeckfly"></div>
+                <div class="equipment-info">
+                    <h3>생각중..</h3>
+                    <p>생각중..</p>
+                </div>
+            </div>
+
+            <div class="equipment-card" onclick="openModal('lateralHighRow')" data-category="back">
+                <div class="equipment-icon icon-latpulldown"></div>
+                <div class="equipment-info">
+                    <h3>생각중..</h3>
+                    <p>생각중..</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="legpress-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('legpress')">&times;</span>
+            <h2>생각중..</h2>
+            <div class="modal-flex-container">
+                <div class="video-container">
+                    <video controls>
+                        <source src="레그프레스.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="content-container">
+                    <p>생각중..</p>
+                    <div class="usage-steps">
+                        <h4>생각중..</h4>
+                        <ol>
+                            <li>생각중..</li>
+                            <li>생각중..</li>
+                            <li>생각중..</li>
+                            <li>생각중..</li>
+                            <li>생각중..</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="benchpress-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('benchpress')">&times;</span>
+            <h2>이유림 소개</h2>
+            <div class="modal-flex-container">
+                <div class="video-container">
+                    <video controls>
+                        <source src="벤치.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="content-container">
+                    <p>생각중..입니다</p>
+                    <div class="usage-steps">
+                        <h4>생각중..</h4>
+                        <ol>
+                            <li>생각중...</li>
+                            <li>생각중..</li>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="latpulldown-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('latpulldown')">&times;</span>
+            <h2>생각중..</h2>
+            <div class="modal-flex-container">
+                <div class="video-container">
+                    <video controls>
+                        <source src="랫풀.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="content-container">
+                    <p>생각중..</p>
+                    <div class="usage-steps">
+                        <h4>생각중..</h4>
+                        <ol>
+                            <li>생각중..</li>
+                            <li>생각중..</li>
+                            <li>생각중..</li>
+                            <li>생각중..</li>
+                            <li>생각중..</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New equipment modals -->
+    <div id="shoulderpress-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('shoulderpress')">&times;</span>
+            <h2>생각중..</h2>
+            <div class="modal-flex-container">
+                <div class="video-container">
+                    <video controls>
+                        <source src="숄더프레스.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="content-container">
+                    <p>생각중..</p>
+                    <div class="usage-steps">
+                        <h4>생각중..</h4>
+                        <ol>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="chestpress-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('chestpress')">&times;</span>
+            <h2>생각중....</h2>
+            <div class="equipment-icon icon-pecdeckfly" style="height: 150px; margin-bottom: 1rem;"></div>
+            <p>생각중..</p>
+            <div class="usage-steps">
+                <h4>생각중..</h4>
+                <ol>
+                    <li>생각중..</li>
+                    <li>생각중..</li>
+                    <li>생각중..</li>
+                    <li>생각중..</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <div id="legcurl-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('legcurl')">&times;</span>
+            <h2>생각중..</h2>
+            <div class="equipment-icon icon-bicepCurl" style="height: 150px; margin-bottom: 1rem;"></div>
+            <p>생각중..</p>
+            <div class="usage-steps">
+                <h4>생각중..</h4>
+                <ol>
+                    <li>생각중..</li>
+                    <li>생각중..</li>
+                    <li>생각중...</li>
+                    <li>생각중...</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <div id="abcrunch-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('abcrunch')">&times;</span>
+            <h2>생각중..</h2>
+            <div class="modal-flex-container">
+                <div class="video-container">
+                    <video controls>
+                        <source src="복근.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="content-container">
+                    <p>생각중..</p>
+                    <div class="usage-steps">
+                        <h4>생각중..</h4>
+                        <ol>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="calfRaise-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('calfRaise')">&times;</span>
+            <h2>생각중..</h2>
+            <div class="modal-flex-container">
+                <div class="video-container">
+                    <video controls>
+                        <source src="카프레이즈.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="content-container">
+                    <p>생각중...</p>
+                    <div class="usage-steps">
+                        <h4>생각중..</h4>
+                        <ol>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="bicepCurl-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('bicepCurl')">&times;</span>
+            <h2>생각중..</h2>
+            <div class="modal-flex-container">
+                <div class="video-container">
+                    <video controls>
+                        <source src="바이셉.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="content-container">
+                    <p>생각중...</p>
+                    <div class="usage-steps">
+                        <h4>생각중..</h4>
+                        <ol>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tricepExtension-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('tricepExtension')">&times;</span>
+            <h2>생각중..</h2>
+            <div class="modal-flex-container">
+                <div class="video-container">
+                    <video controls>
+                        <source src="트라이셉.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="content-container">
+                    <p>생각중...</p>
+                    <div class="usage-steps">
+                        <h4>생각중..</h4>
+                        <ol>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 추가 모달 -->
+    <div id="legextension-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('legextension')">&times;</span>
+            <h2>생각중..</h2>
+            <div class="modal-flex-container">
+                <div class="video-container">
+                    <video controls>
+                        <source src="레그익스텐션.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="content-container">
+                    <p>생각중...</p>
+                    <div class="usage-steps">
+                        <h4>생각중..</h4>
+                        <ol>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="cablecrossover-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('cablecrossover')">&times;</span>
+            <h2>좋아하는거</h2>
+            <div class="modal-flex-container">
+                <div class="video-container">
+                    <video controls>
+                        <source src="케이블크로스.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="content-container">
+                    <p>딸기를 좋아한다.</p>
+                    <div class="usage-steps">
+                        <h4>올바른 섭취 방법</h4>
+                        <ol>
+                            <li>생각중..</li>
+                            <li>냠냠냠</li>
+                            <li>옴뇸뇸</li>
+                            <li>히히~</li>
+                            <li>뭐어?!</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="smithMachine-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('smithMachine')">&times;</span>
+            <h2>생각중..</h2>
+            <div class="modal-flex-container">
+                <div class="video-container">
+                    <video controls>
+                        <source src="스미스.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="content-container">
+                    <p>생각중...</p>
+                    <div class="usage-steps">
+                        <h4>생각중..</h4>
+                        <ol>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="pecdeckfly-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('pecdeckfly')">&times;</span>
+            <h2>생각중..</h2>
+            <div class="modal-flex-container">
+                <div class="video-container">
+                    <video controls>
+                        <source src="팩덱.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="content-container">
+                    <p>생각중...</p>
+                    <div class="usage-steps">
+                        <h4>생각중..</h4>
+                        <ol>
+                            <li>생각중..</li>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="seatedrow-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('seatedrow')">&times;</span>
+            <h2>생각중..</h2>
+            <div class="modal-flex-container">
+                <div class="video-container">
+                    <video controls>
+                        <source src="로우.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="content-container">
+                    <p>생각중...</p>
+                    <div class="usage-steps">
+                        <h4>생각중..</h4>
+                        <ol>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="reversePecDeck-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('reversePecDeck')">&times;</span>
+            <h2>생각중..</h2>
+            <div class="modal-flex-container">
+                <div class="video-container">
+                    <video controls>
+                        <source src="리버스팩덱.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="content-container">
+                    <p>생각중..</p>
+                    <div class="usage-steps">
+                        <h4>생각중..</h4>
+                        <ol>
+                            <li>생각중..</li>
+                            <li>생각중..</li>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="lateralHighRow-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('lateralHighRow')">&times;</span>
+            <h2>생각중..</h2>
+            <div class="modal-flex-container">
+                <div class="video-container">
+                    <video controls>
+                        <source src="레터럴하이로우.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="content-container">
+                    <p>생각중..</p>
+                    <div class="usage-steps">
+                        <h4>생각중..</h4>
+                        <ol>
+                            <li>생각중..</li>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                            <li>생각중...</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<footer>
+  &copy; 메로오오오오오오옹.
+</footer>
+
 </body>
 </html>
+
