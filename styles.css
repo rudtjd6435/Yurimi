@@ -32,63 +32,112 @@ footer {
 body {
     font-family: 'Noto Sans KR', sans-serif;
     line-height: 1.6;
-    background-color: #f5f5f5;
+    background-color: #f8c5fc;
     min-height: 100vh;
 }
 /* 기본 CSS: 모든 요소에 box-sizing 적용하여 패딩, 보더가 너비/높이에 포함되도록 함 */
 
 /* 헤더 스타일 */
 .hero-header {
-    position: relative;
-    /* 헤더의 높이 조절: 원하는 높이로 설정하세요 (예: 50vh, 600px 등) */
-    height: 60vh; /* <-- 이 값을 원하는 높이로 조절하세요 */
-    overflow: hidden; /* 비디오가 헤더 영역을 벗어나지 않도록 숨김 */
-    display: flex;
-    justify-content: center; /* 수평 중앙 정렬 */
-    align-items: center;     /* 수직 중앙 정렬 */
-    /* 비디오의 배경색과 동일하게 설정하여 레터박스가 생길 경우 눈에 덜 띄도록 */
-    background-color: black; /* 또는 비디오의 평균 색상 */
+  position: relative;
+  height: 60vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* 비디오 스타일 */
-.header-video {
-    position: absolute;
-    top: 0;
-    left: 0;
-    /* 비디오가 헤더 영역을 완전히 덮되, 비율을 유지하며 잘리지 않도록 */
-    width: 100%;
-    height: 100%;
-    /* 여기가 핵심: 비디오가 잘리지 않고 전체적으로 다 보이도록 */
-    object-fit: contain;
-    /* 비디오가 텍스트 뒤에 오도록 z-index를 낮게 설정 */
-    z-index: 1;
+.slide-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 1;
 }
 
-/* 헤더 텍스트 컨테이너 스타일 */
+.slide-container img {
+  position: absolute;
+  width: 100%;
+  height: 80%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+
+.slide-container img.show {
+  opacity: 1;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Gowun+Dodum&display=swap');
+
 .header-content {
-    z-index: 2; /* 텍스트가 비디오 위에 오도록 z-index를 높게 설정 */
-    color: white;
-    text-align: center;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* 텍스트 그림자 추가 */
+  z-index: 2;
+  color: #fff;
+  text-align: center;
+  padding: 1rem;
+  text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.8);
+  animation: fadeInUp 2s ease forwards;
 }
 
-/* 텍스트 스타일 */
 .header-content h1 {
-    font-size: 3em;
-    margin-bottom: 10px;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 3em;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(45deg, #00fff0, #ff00d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: glow 2.5s infinite alternate;
 }
 
 .header-content p {
-    font-size: 1.2em;
+  font-family: 'Gowun Dodum', sans-serif;
+  font-size: 1.3em;
+  color: #f0f0f0;
+  margin-top: 0.5rem;
+  animation: fadeIn 2s ease 1s forwards;
+  opacity: 0;
 }
-header {
-    position: relative;
-    width: 100%;
-    height: 500px; /* 원하는 높이로 조절 가능 */
-    overflow: hidden;
-    margin-bottom: 3rem;
+
+/* 텍스트 애니메이션 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
   }
- 
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes glow {
+  from {
+    text-shadow: 0 0 10px #00fff0, 0 0 20px #00fff0;
+  }
+  to {
+    text-shadow: 0 0 20px #ff00d4, 0 0 30px #ff00d4;
+  }
+}
+
+/* 반응형 대응 */
+@media (max-width: 768px) {
+  .header-content h1 {
+    font-size: 2em;
+  }
+  .header-content p {
+    font-size: 1em;
+  }
+}
+
+
+ /************************************************/
 .container {
     max-width: 1400px;
     margin: 0 auto;
