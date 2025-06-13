@@ -13,6 +13,15 @@ window.addEventListener("resize", () => {
   canvas.height = height;
 });
 
+//헤더
+let slides = document.querySelectorAll('.slide');
+let current = 0;
+
+setInterval(() => {
+  slides[current].classList.remove("show");
+  current = (current + 1) % slides.length;
+  slides[current].classList.add("show");
+}, 3000);
 
 // 모달 열기 함수
 function openModal(equipment) {
